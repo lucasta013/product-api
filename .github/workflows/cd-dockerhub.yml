@@ -53,3 +53,34 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/product-api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/product-api:${{ github.sha }}
+
+  deploy-local:
+    name: Deploy về Docker Engine local
+    runs-on: self-hosted
+    needs: push-image
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull image mới
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: docker compose -p product-api -f docker-compose-prod.yaml pull
+
+      - name: Chạy lại với image mới
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: docker compose -p product-api -f docker-compose-prod.yaml up -d
+
+      - name: Chờ API healthy
+        run: |
+          for ($i = 1; $i -le 30; $i++) {
+            $s = docker inspect --format '{{.State.Health.Status}}' product-api
+            Write-Host "lan ${i}: $s"
+            if ($s -eq 'healthy') { exit 0 }
+            Start-Sleep -Seconds 5
+          }
+          docker compose -p product-api -f docker-compose-prod.yaml logs
+          exit 1
+
+      - name: Smoke test
+        run: curl.exe -f http://localhost:3000/ready
