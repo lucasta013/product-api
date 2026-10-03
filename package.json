@@ -22,7 +22,7 @@
   "dependencies": {
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
-    "mongoose": "^9.10.4"
+    "mongoose": "9.9"
   },
   "devDependencies": {
     "jest": "^30.5.2",
