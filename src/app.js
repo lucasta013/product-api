@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 // liveness: tiến trình còn sống
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', (req, res) => res.json({ status: 'ok', version: 2 }));
 
 // readiness: đã kết nối DB chưa (1 = connected)
 app.get('/ready', (req, res) => {

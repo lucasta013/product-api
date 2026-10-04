@@ -2,6 +2,7 @@ services:
   mongodb:
     image: mongo:7
     container_name: nammongodb
+    restart: unless-stopped
     volumes:
       - nammongo_data:/data/db
     healthcheck:
